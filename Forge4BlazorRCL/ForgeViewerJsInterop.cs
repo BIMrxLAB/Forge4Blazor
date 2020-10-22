@@ -16,23 +16,23 @@ namespace Forge4BlazorRCL
             var stuff = await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.startViewer", new object[] { aToken, aLocation });
         }
 
-        public static async Task<string> LoadDocument(IJSRuntime jsRuntime, string aUrn)
+        public static async Task<string> LoadDocument(IJSRuntime jsRuntime, string aUrn, string aLocation)
         {
-            var aResult = await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadDocument", new object[] { aUrn });
+            var aResult = await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadDocument", new object[] { aUrn, aLocation });
             return aResult;
         }
-        public static async Task LoadNode(IJSRuntime jsRuntime, string aViewable)
+        public static async Task LoadNode(IJSRuntime jsRuntime, string aViewable, string aLocation)
         {
-            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadDocumentNode", new object[] { aViewable });
+            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadDocumentNode", new object[] { aViewable, aLocation });
         }
-        public static async Task LoadFile(IJSRuntime jsRuntime, string aUri)
+        public static async Task LoadFile(IJSRuntime jsRuntime, string aUri, string aLocation)
         {
-            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadFile", new object[] { aUri });
+            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadFile", new object[] { aUri, aLocation });
         }
 
-        public static async Task LoadExtension(IJSRuntime jsRuntime, string aExtension)
+        public static async Task LoadExtension(IJSRuntime jsRuntime, string aExtension, string aLocation)
         {
-            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadExtension", new object[] { aExtension });
+            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadExtension", new object[] { aExtension, aLocation });
         }
     }
 }

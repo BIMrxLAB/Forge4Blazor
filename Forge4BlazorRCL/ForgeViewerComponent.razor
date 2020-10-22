@@ -1,11 +1,13 @@
 ﻿@inject Forge4BlazorRCL.ForgeApiService ForgeApiService;
 @inject IJSRuntime JSRuntime;
 
-<div id="forgeViewer" style="@styleParameter">
+<div id="@id" style="@style">
 </div>
 @code {
-        [Parameter]
-        public string styleParameter { get; set; }
+    [Parameter]
+    public string style { get; set; }
+    [Parameter]
+    public string id { get; set; }
 
     private string _urn;
     [Parameter]
@@ -50,27 +52,27 @@
         base.OnAfterRender(firstRender);
         if (firstRender)
         {
-            await RestartViewer();
+            //await RestartViewer();
         }
     }
 
     async Task RestartViewer()
     {
         JObject aToken = await ForgeApiService.GetTokenAsync();
-        await ForgeViewerJsInterop.StartViewer(JSRuntime, aToken["access_token"].Value<string>(), "forgeViewer");
+        await ForgeViewerJsInterop.StartViewer(JSRuntime, aToken["access_token"].Value<string>(), id);
 
         if (file != null)
         {
 
-            await ForgeViewerJsInterop.LoadExtension(JSRuntime, "Autodesk.PDF");
+            await ForgeViewerJsInterop.LoadExtension(JSRuntime, "Autodesk.PDF", id);
 
-            await ForgeViewerJsInterop.LoadFile(JSRuntime, file);
+            await ForgeViewerJsInterop.LoadFile(JSRuntime, file, id);
         }
 
         if (urn != null && file == null)
         {
-            await ForgeViewerJsInterop.LoadDocument(JSRuntime, urn);
-            await ForgeViewerJsInterop.LoadNode(JSRuntime, null); 
+            await ForgeViewerJsInterop.LoadDocument(JSRuntime, urn, id);
+            await ForgeViewerJsInterop.LoadNode(JSRuntime, null, id);
         }
 
         await AddMouseMoveEvent(JSRuntime);
@@ -80,7 +82,7 @@
     public async Task AddMouseMoveEvent(IJSRuntime jsRuntime)
     {
         var dotNetReference = DotNetObjectReference.Create(this);
-        await jsRuntime.InvokeVoidAsync("forgeViewerJsFunctions.addMouseMoveEvent", dotNetReference);
+        await jsRuntime.InvokeVoidAsync("forgeViewerJsFunctions.addMouseMoveEvent", new object[] { dotNetReference, id });
     }
 
     //https://blazor-university.com/javascript-interop/calling-dotnet-from-javascript/

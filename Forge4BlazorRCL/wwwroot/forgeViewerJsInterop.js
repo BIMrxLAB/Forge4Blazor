@@ -1,5 +1,6 @@
-﻿var viewer;
-var viewerDoc;
+﻿var viewer = {};
+var viewerDoc = {};
+
 window.forgeViewerJsFunctions = {
 
     startViewer: function (token, loc) {
@@ -9,31 +10,32 @@ window.forgeViewerJsFunctions = {
             location: loc
         };
         Autodesk.Viewing.Initializer(options, function onInitialized() {
-            viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById(options.location));
-            viewer.start();
+            viewer[loc] = new Autodesk.Viewing.GuiViewer3D(document.getElementById(options.location));
+            viewer[loc].start();
         });
     },
 
-    addMouseMoveEvent: function (dotNetObject) {
-        viewer.canvas.addEventListener('mousemove', function (e) {
+    addMouseMoveEvent: function (dotNetObject, loc) {
+        viewer[loc].canvas.addEventListener('mousemove', function (e) {
             //console.log("JS: Generated ", e);
             dotNetObject.invokeMethodAsync('PostMouseLocation', e.layerX, e.layerY);
         });
     },
 
-    loadExtension: async function (ext) {
-        await viewer.loadExtension(ext);
+    loadExtension: async function (ext, loc) {
+        await viewer[loc].loadExtension(ext);
     },
 
-    loadFile: async function (file) {
-        await viewer.loadModel(file, viewer);
+    loadFile: async function (file, loc) {
+        viewerDoc[loc] = {};
+        await viewer[loc].loadModel(file, viewer[loc]);
     },
 
     /////////////////////////////////////////////////////////
     // Load a document from URN
     // https://forge.autodesk.com/blog/switching-viewables-forge-viewer
     /////////////////////////////////////////////////////////
-    loadDocument: function (urn) {
+    loadDocument: function (urn, loc) {
 
         return new Promise((resolve, reject) => {
 
@@ -42,7 +44,7 @@ window.forgeViewerJsFunctions = {
                 : urn
 
             Autodesk.Viewing.Document.load(paramUrn, (doc) => {
-                viewerDoc = doc;
+                viewerDoc[loc] = doc;
                 resolve('loadDocument(urn) success.')
 
             }, (error) => {
@@ -52,26 +54,16 @@ window.forgeViewerJsFunctions = {
         })
     },
 
-    onDocumentLoadSuccess: function (doc) {
-        console.warn('onDocumentLoadSuccess...')
-        viewerDoc = doc;
-    },
-
-    onDocumentLoadFailure: function (viewerErrorCode) {
-        console.warn('onDocumentLoadFailure...')
-        console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
-    },
-
-    loadDocumentNode: async function (viewableId) {
+    loadDocumentNode: async function (viewableId, loc) {
         console.warn('loadDocumentNode...')
         var viewables;
         if (viewableId) {
-            viewables = viewerDoc.getRoot().findByGuid(viewableId);
+            viewables = viewerDoc[loc].getRoot().findByGuid(viewableId);
         } else {
-            viewables = viewerDoc.getRoot().getDefaultGeometry();
+            viewables = viewerDoc[loc].getRoot().getDefaultGeometry();
         }
 
-        await viewer.loadDocumentNode(viewerDoc, viewables);
+        await viewer[loc].loadDocumentNode(viewerDoc[loc], viewables);
 
     }
 };
