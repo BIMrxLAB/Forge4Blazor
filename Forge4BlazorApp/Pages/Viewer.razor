@@ -8,15 +8,15 @@
 <div class="container-fluid d-flex h-100">
     <div class="flex-fill bg-warning">
         <h1>Viewer1 (@x1, @y1)</h1> <button @onclick="toggleViewer">Toggle</button>
-        <ForgeViewerComponent id="id1" style="position: relative; height: calc(50% - 100px); width: calc(100% - 0px);"
+        <ForgeViewerAComponent id="id1" style="position: relative; height: calc(50% - 100px); width: calc(100% - 0px);"
                               urn="@urn1" file="@file1" XYChanged="(Func<Tuple<double, double>, Task>)OnXYChange1">
 
-        </ForgeViewerComponent>
+        </ForgeViewerAComponent>
         <h1>Viewer2 (@x2, @y2)</h1> <button @onclick="toggleViewer">Toggle</button>
-        <ForgeViewerComponent id="id2" style="position: relative; height: calc(50% - 100px); width: calc(100% - 0px);"
+        <ForgeViewerAComponent id="id2" style="position: relative; height: calc(50% - 100px); width: calc(100% - 0px);"
                               urn="@urn2" file="@file2" XYChanged="(Func<Tuple<double, double>, Task>)OnXYChange2">
 
-        </ForgeViewerComponent>
+        </ForgeViewerAComponent>
     </div>
 </div>
 

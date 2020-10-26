@@ -1,0 +1,95 @@
+﻿@inject Forge4BlazorRCL.ForgeApiService ForgeApiService;
+@inject IJSRuntime JSRuntime;
+
+<div id="@id" style="@style">
+</div>
+@code {
+    [Parameter]
+    public string style { get; set; }
+    [Parameter]
+    public string id { get; set; }
+
+    private string _urn;
+    [Parameter]
+    public string urn
+    {
+        get
+        {
+            return _urn;
+        }
+        set
+        {
+            if(_urn!=value)
+            {
+                _urn = value;
+                if (value != null) RestartViewer();
+            }
+        }
+    }
+
+    private string _file;
+    [Parameter]
+    public string file
+    {
+        get
+        {
+            return _file;
+        }
+        set
+        {
+            if (_file != value)
+            {
+                _file = value;
+                if (value != null) RestartViewer();
+            }
+        }
+    }
+
+    [Parameter] public EventCallback<Tuple<double, double>> XYChanged { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender)
+        {
+            //await RestartViewer();
+        }
+    }
+
+    async Task RestartViewer()
+    {
+        JObject aToken = await ForgeApiService.GetTokenAsync();
+        await ForgeViewerJsInterop.StartViewer(JSRuntime, aToken["access_token"].Value<string>(), id);
+
+        if (file != null)
+        {
+
+            await ForgeViewerJsInterop.LoadExtension(JSRuntime, "Autodesk.PDF", id);
+
+            await ForgeViewerJsInterop.LoadFile(JSRuntime, file, id);
+        }
+
+        if (urn != null && file == null)
+        {
+            await ForgeViewerJsInterop.LoadDocument(JSRuntime, urn, id);
+            await ForgeViewerJsInterop.LoadNode(JSRuntime, null, id);
+        }
+
+        await AddMouseMoveEvent(JSRuntime);
+
+    }
+
+    public async Task AddMouseMoveEvent(IJSRuntime jsRuntime)
+    {
+        var dotNetReference = DotNetObjectReference.Create(this);
+        await jsRuntime.InvokeVoidAsync("forgeViewerJsFunctions.addMouseMoveEvent", new object[] { dotNetReference, id });
+    }
+
+    //https://blazor-university.com/javascript-interop/calling-dotnet-from-javascript/
+    [JSInvokable("PostMouseLocation")]
+    public void PostMouseLocation(double x, double y)
+    {
+        XYChanged.InvokeAsync(new Tuple<double, double>(x, y));
+    }
+
+}

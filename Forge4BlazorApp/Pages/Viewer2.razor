@@ -1,0 +1,42 @@
+﻿@page "/viewer2"
+
+@using Forge4BlazorRCL;
+@inject Forge4BlazorRCL.ForgeApiService ForgeApiService;
+
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<div class="container-fluid d-flex h-100">
+    <div class="flex-fill bg-warning">
+        <h1>Viewer1 </h1><button @onclick="go">load model</button>
+        <ForgeViewerComponent OnViewerInitializedCallback="GetViewerId1" id="id1" style="position: relative; height: calc(50% - 100px); width: calc(100% - 0px);">
+
+        </ForgeViewerComponent>
+    </div>
+</div>
+
+
+@code {
+
+    ForgeViewer viewer1 { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ForgeApiService.SetClientIdAndSecret(Configuration.GetValue<string>("Forge:ClientId"), Configuration.GetValue<string>("Forge:ClientSecret"));
+    }
+
+    private void GetViewerId1(ForgeViewer aViewer)
+    {
+        viewer1 = aViewer;
+    }
+
+    private async Task go()
+    {
+        await viewer1.Start();
+
+        await viewer1.LoadExtensionAsync("Autodesk.PDF");
+
+        await viewer1.LoadModelAsync("pdfs/bldg_8_2.pdf");
+
+    }
+}
