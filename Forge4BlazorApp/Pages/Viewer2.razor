@@ -9,7 +9,9 @@
 <div class="container-fluid d-flex h-100">
     <div class="flex-fill bg-warning">
         <h1>Viewer1 </h1><button @onclick="go">load model</button>
-        <ForgeViewerComponent OnViewerInitializedCallback="GetViewerId1" id="id1" style="position: relative; height: calc(50% - 100px); width: calc(100% - 0px);">
+        <ForgeViewerComponent OnViewerInitializedCallback="GetViewerId" id="id1" 
+                              style="position: relative; height: calc(50% - 100px); width: calc(100% - 0px);"
+                              >
 
         </ForgeViewerComponent>
     </div>
@@ -18,25 +20,25 @@
 
 @code {
 
-    ForgeViewer viewer1 { get; set; }
+    ForgeViewer myViewer { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         ForgeApiService.SetClientIdAndSecret(Configuration.GetValue<string>("Forge:ClientId"), Configuration.GetValue<string>("Forge:ClientSecret"));
     }
 
-    private void GetViewerId1(ForgeViewer aViewer)
+    private void GetViewerId(ForgeViewer aViewer)
     {
-        viewer1 = aViewer;
+        myViewer = aViewer;
     }
 
     private async Task go()
     {
-        await viewer1.Start();
+        await myViewer.Start();
 
-        await viewer1.LoadExtensionAsync("Autodesk.PDF");
+        await myViewer.LoadExtensionAsync("Autodesk.PDF");
 
-        await viewer1.LoadModelAsync("pdfs/bldg_8_2.pdf");
+        await myViewer.LoadModelAsync("pdfs/bldg_8_2.pdf");
 
     }
 }
