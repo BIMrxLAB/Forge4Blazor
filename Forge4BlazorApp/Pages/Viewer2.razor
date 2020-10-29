@@ -9,7 +9,7 @@
 <div class="container-fluid d-flex h-100">
     <div class="flex-fill bg-warning">
         <h1>Viewer1 </h1><button @onclick="go">load model</button>
-        <ForgeViewerComponent OnViewerInitializedCallback="GetViewerId" id="id1" 
+        <ForgeViewerComponent OnViewerInitializedCallback="GetViewer" id="id1" 
                               style="position: relative; height: calc(50% - 100px); width: calc(100% - 0px);"
                               >
 
@@ -27,7 +27,7 @@
         ForgeApiService.SetClientIdAndSecret(Configuration.GetValue<string>("Forge:ClientId"), Configuration.GetValue<string>("Forge:ClientSecret"));
     }
 
-    private void GetViewerId(ForgeViewer aViewer)
+    private void GetViewer(ForgeViewer aViewer)
     {
         myViewer = aViewer;
     }
