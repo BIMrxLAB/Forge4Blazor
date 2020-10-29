@@ -34,5 +34,14 @@ namespace Forge4BlazorRCL
         {
             await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadExtension", new object[] { aExtension, aLocation });
         }
+        public static async Task RegisterAndActivateTool(IJSRuntime jsRuntime, object aTool, string aLocation)
+        {
+            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.registerAndActivateTool", new object[] { aTool, aLocation });
+        }
+        public static async Task DeregisterAndDeactivateTool(IJSRuntime jsRuntime, object aTool, string aLocation)
+        {
+            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.deregisterAndDeactivateTool", new object[] { aTool, aLocation });
+        }
+
     }
 }
