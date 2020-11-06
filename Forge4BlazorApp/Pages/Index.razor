@@ -1,7 +1,57 @@
 ﻿@page "/"
 
+@using Autodesk.Forge.Model;
+@using Forge4BlazorRCL;
+@inject ForgeApiService ForgeApiService;
+
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@if (Buckets != null)
+{
+    foreach (var aBucket in Buckets.Items)
+    {
+        <p>@aBucket.BucketKey @aBucket.CreatedDate @aBucket.PolicyKey</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>ObjectKey</th>
+                    <th>ObjectSize</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var aBucketObject in BucketObjects[aBucket.BucketKey].Items)
+                {
+                <tr>
+                    <td>
+                        @aBucketObject.ObjectKey
+                    </td>
+                    <td>
+                        @Math.Round((decimal)(aBucketObject.Size / 1000000.0), 3)
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code{
+    Buckets Buckets { get; set; }
+    Dictionary<string, BucketObjects> BucketObjects { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+
+        Buckets = await ForgeApiService.GetBucketsAsync();
+        BucketObjects = new Dictionary<string, BucketObjects>();
+        foreach (var aBucket in Buckets.Items)
+        {
+            BucketObjects.Add(aBucket.BucketKey, await ForgeApiService.GetBucketObjectsAsync(aBucket));
+        }
+
+    }
+}

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Forge4BlazorApp.Data;
 using Forge4BlazorRCL;
 
 namespace Forge4BlazorApp
@@ -30,7 +29,6 @@ namespace Forge4BlazorApp
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<ForgeApiService>();
 
         }

@@ -1,5 +1,4 @@
-﻿
-<Router AppAssembly="@typeof(Program).Assembly">
+﻿<Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>
@@ -9,3 +8,18 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@inject IConfiguration Configuration
+
+@inject ForgeApiService ForgeApiService
+
+@code{
+
+    protected override async Task OnInitializedAsync()
+    {
+        ForgeApiService.SetClientIdAndSecret(
+            Configuration.GetValue<string>("Forge:ClientId"),
+            Configuration.GetValue<string>("Forge:ClientSecret")
+        );
+    }
+}

@@ -18,7 +18,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Viewer = new ForgeViewer(JSRuntime, id);
+        Viewer = new ForgeViewer(JSRuntime, id, ForgeApiService);
         await OnViewerInitializedCallback.InvokeAsync(Viewer);
     }
 

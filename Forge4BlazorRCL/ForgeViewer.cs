@@ -11,11 +11,12 @@ namespace Forge4BlazorRCL
     public class ForgeViewer
     {
         private readonly IJSRuntime JSRuntime;
-
+        private ForgeApiService ForgeApiService { get;set;}
         public string Id { get; set; }
         public List<string> Extensions { get; set; }
-        public ForgeViewer(IJSRuntime jsRuntime, string id)
+        public ForgeViewer(IJSRuntime jsRuntime, string id, ForgeApiService aForgeApiService)
         {
+            ForgeApiService = aForgeApiService;
             JSRuntime = jsRuntime;
             Id = id;
             Extensions = new List<string>();
@@ -23,7 +24,7 @@ namespace Forge4BlazorRCL
 
         public async Task Start()
         {
-            JObject aToken = await ForgeApiService.GetTokenAsync();
+            JObject aToken = ForgeApiService.PublicToken;
             await ForgeViewerJsInterop.StartViewer(JSRuntime, aToken["access_token"].Value<string>(), Id);
         }
 
@@ -32,9 +33,18 @@ namespace Forge4BlazorRCL
             await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadExtension", aExtensionName, Id);
         }
 
-        public async Task LoadModelAsync(string aUri)
+        public async Task LoadFileAsync(string aUri)
         {
             await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadFile", aUri, Id);
+        }
+        public async Task LoadDocumentAsync(string aUrn)
+        {
+            await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadDocument", aUrn, Id);
+        }
+
+        public async Task LoadNode(string aViewable=null)
+        {
+            await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadDocumentNode", aViewable, Id);
         }
 
         public async Task AddMouseMoveEvent()

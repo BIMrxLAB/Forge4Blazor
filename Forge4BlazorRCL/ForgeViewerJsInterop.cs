@@ -13,7 +13,7 @@ namespace Forge4BlazorRCL
 
         public static async Task StartViewer(IJSRuntime jsRuntime, string aToken, string aLocation)
         {
-            var stuff = await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.startViewer", new object[] { aToken, aLocation });
+            await jsRuntime.InvokeAsync<string>("forgeViewerJsFunctions.startViewer", new object[] { aToken, aLocation });
         }
 
         public static async Task<string> LoadDocument(IJSRuntime jsRuntime, string aUrn, string aLocation)

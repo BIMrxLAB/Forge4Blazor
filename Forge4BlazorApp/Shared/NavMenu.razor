@@ -1,4 +1,9 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using Autodesk.Forge.Model;
+@using Forge4BlazorRCL;
+@inject ForgeApiService ForgeApiService;
+
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">Forge4BlazorApp</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -12,22 +17,28 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="viewer2">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Forge Viewer
-            </NavLink>
-        </li>
-
+        @if (Buckets != null)
+        {
+            foreach (var aBucket in Buckets.Items)
+            {
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" @onclick="() => { BucketIsCollapsed[aBucket.BucketKey] = !BucketIsCollapsed[aBucket.BucketKey]; }">
+                        <span class="oi @(BucketIsCollapsed[aBucket.BucketKey]? "oi-envelope-closed" : "oi-envelope-open")" aria-hidden="true"></span> @aBucket.BucketKey
+                    </NavLink>
+                </li>
+                if (!BucketIsCollapsed[aBucket.BucketKey])
+                {
+                    @foreach (ObjectDetails aObject in BucketObjects[aBucket.BucketKey].Items)
+                    {
+                        <li class="nav-item px-3">
+                            <NavLink class="nav-link" href="@($"viewer/{Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(aObject.ObjectId))}/{Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(aObject.Location))}")">
+                                <span class="oi oi-file" aria-hidden="true"></span> @aObject.ObjectKey
+                            </NavLink>
+                        </li>
+                    }
+                }
+            }
+        }
     </ul>
 </div>
 
@@ -40,4 +51,22 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    Buckets Buckets { get; set; }
+    Dictionary<string, BucketObjects> BucketObjects { get; set; }
+    Dictionary<string, bool> BucketIsCollapsed { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+
+        Buckets = await ForgeApiService.GetBucketsAsync();
+        BucketObjects = new Dictionary<string, BucketObjects>();
+        BucketIsCollapsed = new Dictionary<string, bool>();
+        foreach (var aBucket in Buckets.Items)
+        {
+            BucketIsCollapsed.Add(aBucket.BucketKey, true);
+            BucketObjects.Add(aBucket.BucketKey, await ForgeApiService.GetBucketObjectsAsync(aBucket));
+        }
+
+    }
+
 }

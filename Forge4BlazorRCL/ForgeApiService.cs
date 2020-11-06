@@ -1,4 +1,5 @@
 ﻿using Autodesk.Forge;
+using Autodesk.Forge.Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -12,18 +13,26 @@ namespace Forge4BlazorRCL
     public class ForgeApiService
     {
 
-        private static JObject InternalToken { get; set; }
-        private static JObject PublicToken { get; set; }
+        public JObject InternalToken { get; set; }
+
+        public JObject PublicToken { get; set; }
 
         private static string ClientId { get; set; }
         private static string ClientSecret { get; set; }
 
+        public static BucketsApi bucketApi = new BucketsApi();
+        public static ObjectsApi objectsApi = new ObjectsApi();
+
+        public ForgeApiService()
+        {
+
+        }
         public void SetClientIdAndSecret(string aClientId, string aClientSecret)
         {
             ClientId = aClientId;
             ClientSecret = aClientSecret;
         }
-        private static async Task<JObject> Get2LeggedTokenAsync(Scope[] scopes)
+        private async Task<JObject> Get2LeggedTokenAsync(Scope[] scopes)
         {
             TwoLeggedApi oauth = new TwoLeggedApi();
             string grantType = "client_credentials";
@@ -35,44 +44,55 @@ namespace Forge4BlazorRCL
         /// <summary>
         /// Get access token with public (viewables:read) scope
         /// </summary>
-        public static async Task<JObject> GetTokenAsync()
+        public async Task SetPublicTokenAsync()
         {
             if (PublicToken == null || PublicToken["ExpiresAt"].Value<DateTime>() < DateTime.UtcNow)
             {
-                PublicToken = await Get2LeggedTokenAsync(new Scope[] { Scope.ViewablesRead });
+                PublicToken = await Get2LeggedTokenAsync(new Scope[] { Scope.BucketRead, Scope.DataRead, Scope.ViewablesRead });
                 PublicToken["ExpiresAt"] = DateTime.UtcNow.AddSeconds(PublicToken["expires_in"].Value<double>());
             }
-            return JObject.FromObject(PublicToken);
         }
 
         /// <summary>
         /// Get access token with internal (write) scope
         /// </summary>
-        public static async Task<JObject> GetInternalAsync()
+        public async Task SetInternalTokenAsync()
         {
             if (InternalToken == null || InternalToken["ExpiresAt"].Value<DateTime>() < DateTime.UtcNow)
             {
                 InternalToken = await Get2LeggedTokenAsync(new Scope[] { Scope.BucketCreate, Scope.BucketRead, Scope.DataRead, Scope.DataCreate });
                 InternalToken["ExpiresAt"] = DateTime.UtcNow.AddSeconds(InternalToken["expires_in"].Value<double>());
             }
-
-            return JObject.FromObject(InternalToken);
         }
 
         public async Task<JObject> GetManifestAsync(string urn)
         {
-            if (PublicToken == null || PublicToken["ExpiresAt"].Value<DateTime>() > DateTime.UtcNow)
+            await SetPublicTokenAsync();
+            HttpClient aClient = new HttpClient
             {
+                BaseAddress = new Uri(@"https://developer.api.autodesk.com/modelderivative/v2/")
+            };
+            aClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PublicToken["access_token"].Value<string>());
+            var aResponse = await aClient.GetAsync($"designdata/{urn}/manifest");
+            var aResult = await aResponse.Content.ReadAsStringAsync();
+            return aResult=="" ? null : JObject.Parse(aResult);
+        }
 
-                HttpClient aClient = new HttpClient();
-                aClient.BaseAddress = new Uri(@"https://developer.api.autodesk.com/modelderivative/v2/");
-                aClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", PublicToken["access_token"].Value<string>());
-                var aResponse = await aClient.GetAsync($"designdata/{urn}/manifest");
-                var aResult = await aResponse.Content.ReadAsStringAsync();
-                return JObject.Parse(aResult);
-            }
-
-            return null;
+        public async Task<Buckets> GetBucketsAsync()
+        {
+            await SetPublicTokenAsync();
+            bucketApi.Configuration.AccessToken = PublicToken["access_token"].Value<string>();
+            var bucketsDynamic = await bucketApi.GetBucketsAsync();
+            var buckets = bucketsDynamic.ToObject<Buckets>();
+            return buckets;
+        }
+        public async Task<BucketObjects> GetBucketObjectsAsync(BucketsItems aBucket)
+        {
+            await SetPublicTokenAsync();
+            objectsApi.Configuration.AccessToken = PublicToken["access_token"].Value<string>();
+            var bucketObjectsDynamic = await objectsApi.GetObjectsAsync(aBucket.BucketKey);
+            var bucketObjects = bucketObjectsDynamic.ToObject<BucketObjects>();
+            return bucketObjects;
         }
 
     }

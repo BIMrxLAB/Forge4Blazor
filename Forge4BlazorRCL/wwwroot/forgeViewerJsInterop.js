@@ -48,7 +48,7 @@ window.forgeViewerJsFunctions = {
 
     addMouseMoveEvent: function (dotNetObject, loc) {
         viewer[loc].canvas.addEventListener('mousemove', function (e) {
-            //console.log("JS: Generated ", e);
+            console.log("JS: Generated mousemove", e);
             dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY);
 
             //https://d1r98t40ydopvd.cloudfront.net/blog/snappy-viewer-tools
