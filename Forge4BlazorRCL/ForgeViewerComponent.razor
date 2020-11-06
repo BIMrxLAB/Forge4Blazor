@@ -22,20 +22,6 @@
         await OnViewerInitializedCallback.InvokeAsync(Viewer);
     }
 
-    //public async Task AddMouseMoveEvent()
-    //{
-    //    var dotNetReference = DotNetObjectReference.Create(this);
-    //    await JSRuntime.InvokeVoidAsync("forgeViewerJsFunctions.addMouseMoveEvent", new object[] { dotNetReference, id });
-    //}
 
-    [Parameter] public EventCallback<Tuple<double, double>> XYChanged { get; set; }
-
-
-    ////https://blazor-university.com/javascript-interop/calling-dotnet-from-javascript/
-    //[JSInvokable("PostMouseLocation")]
-    //public void PostMouseLocation(double x, double y)
-    //{
-    //    XYChanged.InvokeAsync(new Tuple<double, double>(x, y));
-    //}
 
 }

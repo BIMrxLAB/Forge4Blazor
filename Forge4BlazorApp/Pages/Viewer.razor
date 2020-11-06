@@ -79,14 +79,14 @@
     {
         // This event will fire when the parameters change
         // Put your code here.  
-        JObject stuff = await ForgeApiService.GetManifestAsync(urn64);
-        var stufftxt = Newtonsoft.Json.JsonConvert.SerializeObject(stuff, Newtonsoft.Json.Formatting.Indented);
+        JObject manifestJObject = await ForgeApiService.GetManifestAsync(urn64);
+        var manifestTxt = Newtonsoft.Json.JsonConvert.SerializeObject(manifestJObject, Newtonsoft.Json.Formatting.Indented);
 
         snapIsOn = false;
         await myViewer.Start();
         await myViewer.LoadExtensionAsync("Autodesk.Snapping");
 
-        if (stuff == null && uri.ToLower().EndsWith("pdf"))
+        if (manifestJObject == null && uri.ToLower().EndsWith("pdf"))
         {
             await myViewer.LoadExtensionAsync("Autodesk.PDF");
             await myViewer.LoadFileAsync(uri);
