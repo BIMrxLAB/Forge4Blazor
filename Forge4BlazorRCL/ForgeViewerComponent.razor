@@ -14,12 +14,48 @@
     [Parameter]
     public EventCallback<ForgeViewer> OnViewerInitializedCallback { get; set; }
 
+    private bool _useSnapper = false;
+
+    [Parameter]
+    public bool UseSnapper
+    {
+        get
+        {
+            return _useSnapper;
+        }
+        set
+        {
+            if(value!=_useSnapper)
+            {
+                _useSnapper = value;
+                SnapperChangeAsync();
+            }
+        }
+    }
+
+    async Task SnapperChangeAsync()
+    {
+        if (_useSnapper && Viewer!=null)
+        {
+            await Viewer.LoadExtensionAsync("Autodesk.Snapping");
+            await Viewer.MakeSnapper();
+            await Viewer.RegisterAndActivateSnapper();
+        }
+        else
+        {
+            await Viewer.DestroySnapper();
+            await Viewer.DeregisterAndDeactivateSnapper();
+        }
+    }
+
+
     private ForgeViewer Viewer { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         Viewer = new ForgeViewer(JSRuntime, id, ForgeApiService);
         await OnViewerInitializedCallback.InvokeAsync(Viewer);
+        await SnapperChangeAsync();
     }
 
 

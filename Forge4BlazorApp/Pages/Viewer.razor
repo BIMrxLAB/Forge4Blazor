@@ -7,7 +7,7 @@
     <div class="flex-fill bg-warning">
         <h1>Viewer Move: (@x1, @y1) Clicked: (@Math.Round(x1c, 2), @Math.Round(y1c, 2)) SnapperClicked: (@Math.Round(x1s, 2), @Math.Round(y1s, 2))</h1>
         <input type="checkbox" @bind="snapIsOn" />Snap
-        <ForgeViewerComponent OnViewerInitializedCallback="GetViewer" id="id1"
+        <ForgeViewerComponent OnViewerInitializedCallback="GetViewer" id="id1" UseSnapper="snapIsOn"
                               style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);">
 
         </ForgeViewerComponent>
@@ -30,44 +30,13 @@
         }
     }
 
+    bool snapIsOn { get; set; }
+
     ForgeViewer myViewer { get; set; }
 
     private void GetViewer(ForgeViewer aViewer)
     {
         myViewer = aViewer;
-    }
-
-    bool _snapIsOn;
-    bool snapIsOn
-    {
-        get
-        {
-            return _snapIsOn;
-        }
-        set
-        {
-            if (value != _snapIsOn)
-            {
-                _snapIsOn = value;
-                OnSnapChange();
-            }
-        }
-    }
-
-    async Task OnSnapChange()
-    {
-        if (snapIsOn)
-        {
-            await myViewer.MakeSnapper();
-            await myViewer.RegisterAndActivateSnapper();
-        }
-        else
-        {
-            await myViewer.DestroySnapper();
-            await myViewer.DeregisterAndDeactivateSnapper();
-
-        }
-
     }
 
 
@@ -77,14 +46,12 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        // This event will fire when the parameters change
-        // Put your code here.  
+
         JObject manifestJObject = await ForgeApiService.GetManifestAsync(urn64);
         var manifestTxt = Newtonsoft.Json.JsonConvert.SerializeObject(manifestJObject, Newtonsoft.Json.Formatting.Indented);
 
         snapIsOn = false;
         await myViewer.Start();
-        await myViewer.LoadExtensionAsync("Autodesk.Snapping");
 
         if (manifestJObject == null && uri.ToLower().EndsWith("pdf"))
         {
