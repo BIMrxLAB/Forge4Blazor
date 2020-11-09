@@ -24,8 +24,8 @@ namespace Forge4BlazorRCL
 
         public async Task Start()
         {
-            JObject aToken = ForgeApiService.PublicToken;
-            await ForgeViewerJsInterop.StartViewer(JSRuntime, aToken["access_token"].Value<string>(), Id);
+            string aToken = ForgeApiService.PublicToken["access_token"].Value<string>();
+            await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.startViewer", new object[] { aToken, Id });
         }
 
         public async Task LoadExtensionAsync(string aExtensionName)
@@ -71,11 +71,7 @@ namespace Forge4BlazorRCL
         {
             XYClicked.Invoke(this, new Tuple<double, double>(x, y));
         }
-        public async Task AddMouseSnapperClickEvent()
-        {
-            var dotNetReference = DotNetObjectReference.Create(this);
-            await JSRuntime.InvokeVoidAsync("forgeViewerJsFunctions.addMouseSnapperClickEvent", new object[] { dotNetReference, Id });
-        }
+
         public EventHandler<Tuple<double, double>> XYSnapperClicked { get; set; }
         [JSInvokable("PostMouseSnapperClickLocation")]
         public void PostMouseSnapperClickLocation(double x, double y)

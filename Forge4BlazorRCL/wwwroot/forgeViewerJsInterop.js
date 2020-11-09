@@ -27,12 +27,12 @@ window.forgeViewerJsFunctions = {
             if (!(snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
                 if (snapper[loc].isSnapped()) {
                     const result = snapper[loc].getSnapResult();
+                    console.warn(result);
+                    dotNetObject.invokeMethodAsync('PostMouseSnapperClickLocation', result.geomVertex.x, result.geomVertex.y);
+
                     const { SnapType } = Autodesk.Viewing.MeasureCommon;
                     switch (result.geomType) {
                         case SnapType.SNAP_VERTEX:
-                            console.warn(result);
-                            dotNetObject.invokeMethodAsync('PostMouseSnapperClickLocation', result.geomVertex.x, result.geomVertex.y);
-                            break;
                         case SnapType.SNAP_MIDPOINT:
                         case SnapType.SNAP_INTERSECTION:
                         case SnapType.SNAP_CIRCLE_CENTER:

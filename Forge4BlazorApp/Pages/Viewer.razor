@@ -5,7 +5,7 @@
 
 <div class="container-fluid d-flex h-100">
     <div class="flex-fill bg-warning">
-        <h1>Viewer Move: (@x1, @y1) Clicked: (@Math.Round(x1c, 2), @Math.Round(y1c, 2)) SnapperClicked: (@Math.Round(x1s, 2), @Math.Round(y1s, 2))</h1>
+        <h4>Viewer Move: (@x1, @y1) Clicked: (@Math.Round(x1c, 2), @Math.Round(y1c, 2)) SnapperClicked: (@Math.Round(x1s, 2), @Math.Round(y1s, 2))</h4>
         <input type="checkbox" @bind="snapIsOn" />Snap
         <ForgeViewerComponent OnViewerInitializedCallback="GetViewer" id="id1" UseSnapper="snapIsOn"
                               style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);">
@@ -51,7 +51,9 @@
         var manifestTxt = Newtonsoft.Json.JsonConvert.SerializeObject(manifestJObject, Newtonsoft.Json.Formatting.Indented);
 
         snapIsOn = false;
+
         await myViewer.Start();
+
 
         if (manifestJObject == null && uri.ToLower().EndsWith("pdf"))
         {
@@ -66,10 +68,12 @@
 
         await myViewer.AddMouseMoveEvent();
         await myViewer.AddMouseClickEvent();
+        //await myViewer.AddMouseSnapperClickEvent();
 
         myViewer.XYChanged += OnMouseChangeAsync;
         myViewer.XYClicked += OnMouseClickedAsync;
         myViewer.XYSnapperClicked += OnMouseSnapperClickedAsync;
+
 
 
     }

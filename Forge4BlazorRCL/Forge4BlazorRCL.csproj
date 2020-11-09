@@ -5,6 +5,10 @@
     <RazorLangVersion>3.0</RazorLangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="ForgeViewerJsInterop.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Autodesk.Forge" Version="1.7.0" />
