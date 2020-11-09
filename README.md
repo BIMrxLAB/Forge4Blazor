@@ -7,8 +7,7 @@ The app project uses secrets to keep forge client application settings from gith
 {
   "Forge": {
     "ClientId": "fancy client id",
-    "ClientSecret": "fancy client secret",
-    "SampleUrn": "example urn to a forge document"
+    "ClientSecret": "fancy client secret"
   }
 }
 ~~~
