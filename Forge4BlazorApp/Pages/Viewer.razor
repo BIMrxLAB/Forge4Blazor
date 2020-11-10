@@ -5,9 +5,10 @@
 
 <div class="container-fluid d-flex h-100">
     <div class="flex-fill bg-warning">
-        <h4>Viewer Move: (@x1, @y1) Clicked: (@Math.Round(x1c, 2), @Math.Round(y1c, 2)) SnapperClicked: (@Math.Round(x1s, 2), @Math.Round(y1s, 2))</h4>
+        <h4>Move - Canvas: (@ForgeViewerMouseMovePosition.CanvasX, @ForgeViewerMouseMovePosition.CanvasY) World: (@Math.Round(ForgeViewerMouseMovePosition.WorldX, 2), @Math.Round(ForgeViewerMouseMovePosition.WorldY, 2)) Snapper: (@Math.Round(ForgeViewerMouseMovePosition.SnapX, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapY, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapZ, 2))</h4>
+        <h4>Click - Canvas: (@ForgeViewerMouseClickPosition.CanvasX, @ForgeViewerMouseClickPosition.CanvasY) World: (@Math.Round(ForgeViewerMouseClickPosition.WorldX, 2), @Math.Round(ForgeViewerMouseClickPosition.WorldY, 2)) Snapper: (@Math.Round(ForgeViewerMouseClickPosition.SnapX, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapY, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapZ, 2))</h4>
         <input type="checkbox" @bind="snapIsOn" />Snap
-        <ForgeViewerComponent OnViewerInitializedCallback="GetViewer" id="id1" UseSnapper="snapIsOn"
+        <ForgeViewerComponent OnViewerInitializedCallback="GetViewer" id="id1" UseSnapper="snapIsOn" OnMouseMove="OnMouseMove" OnMouseClick="OnMouseClick"
                               style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);">
 
         </ForgeViewerComponent>
@@ -54,7 +55,6 @@
 
         await myViewer.Start();
 
-
         if (manifestJObject == null && uri.ToLower().EndsWith("pdf"))
         {
             await myViewer.LoadExtensionAsync("Autodesk.PDF");
@@ -66,43 +66,18 @@
             await myViewer.LoadNode();
         }
 
-        await myViewer.AddMouseMoveEvent();
-        await myViewer.AddMouseClickEvent();
-        //await myViewer.AddMouseSnapperClickEvent();
-
-        myViewer.XYChanged += OnMouseChangeAsync;
-        myViewer.XYClicked += OnMouseClickedAsync;
-        myViewer.XYSnapperClicked += OnMouseSnapperClickedAsync;
-
-
-
     }
 
-    double x1 { get; set; }
-    double y1 { get; set; }
-    private async void OnMouseChangeAsync(object sender, Tuple<double, double> aXY)
+    ForgeViewerMousePosition ForgeViewerMouseMovePosition = new ForgeViewerMousePosition();
+    private void OnMouseMove(ForgeViewerMousePosition aFVMousePosition)
     {
-        x1 = aXY.Item1;
-        y1 = aXY.Item2;
-        StateHasChanged();
+        ForgeViewerMouseMovePosition = aFVMousePosition;
     }
 
-    double x1c { get; set; }
-    double y1c { get; set; }
-    private async void OnMouseClickedAsync(object sender, Tuple<double, double> aXY)
+    ForgeViewerMousePosition ForgeViewerMouseClickPosition = new ForgeViewerMousePosition();
+    private void OnMouseClick(ForgeViewerMousePosition aFVMousePosition)
     {
-        x1c = aXY.Item1;
-        y1c = aXY.Item2;
-        StateHasChanged();
-    }
-
-    double x1s { get; set; }
-    double y1s { get; set; }
-    private async void OnMouseSnapperClickedAsync(object sender, Tuple<double, double> aXY)
-    {
-        x1s = aXY.Item1;
-        y1s = aXY.Item2;
-        StateHasChanged();
+        ForgeViewerMouseClickPosition = aFVMousePosition;
     }
 
 }

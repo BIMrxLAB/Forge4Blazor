@@ -22,13 +22,12 @@ window.forgeViewerJsFunctions = {
             //https://stackoverflow.com/questions/48142782/how-to-get-x-y-coordinates-in-2d-drawing-of-forge-viewer
             let stuff = viewer[loc].clientToWorld(e.layerX, e.layerY, true);
             console.warn(stuff);
-            dotNetObject.invokeMethodAsync('PostMouseClickLocation', stuff.point.x, stuff.point.y);
 
             if (!(snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
                 if (snapper[loc].isSnapped()) {
                     const result = snapper[loc].getSnapResult();
                     console.warn(result);
-                    dotNetObject.invokeMethodAsync('PostMouseSnapperClickLocation', result.geomVertex.x, result.geomVertex.y);
+                    dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, result.geomVertex.x, result.geomVertex.y, result.geomVertex.z);
 
                     const { SnapType } = Autodesk.Viewing.MeasureCommon;
                     switch (result.geomType) {
@@ -42,6 +41,8 @@ window.forgeViewerJsFunctions = {
                             break;
                     }
                 }
+            } else {
+                dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
             }
         });
     },
@@ -49,13 +50,18 @@ window.forgeViewerJsFunctions = {
     addMouseMoveEvent: function (dotNetObject, loc) {
         viewer[loc].canvas.addEventListener('mousemove', function (e) {
             console.log("JS: Generated mousemove", e);
-            dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY);
+
+            let stuff = viewer[loc].clientToWorld(e.layerX, e.layerY, true);
+            console.warn(stuff);
 
             //https://d1r98t40ydopvd.cloudfront.net/blog/snappy-viewer-tools
             if (!(snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
                 snapper[loc].indicator.clearOverlays();
                 if (snapper[loc].isSnapped()) {
                     const result = snapper[loc].getSnapResult();
+
+                    dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, result.geomVertex.x, result.geomVertex.y, result.geomVertex.z);
+
                     const { SnapType } = Autodesk.Viewing.MeasureCommon;
                     switch (result.geomType) {
                         case SnapType.SNAP_VERTEX:
@@ -78,6 +84,8 @@ window.forgeViewerJsFunctions = {
                             break;
                     }
                 }
+            } else {
+                dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
             }
         });
     },

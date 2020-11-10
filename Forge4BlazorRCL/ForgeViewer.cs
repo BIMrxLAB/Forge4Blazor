@@ -26,7 +26,10 @@ namespace Forge4BlazorRCL
         {
             string aToken = ForgeApiService.PublicToken["access_token"].Value<string>();
             await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.startViewer", new object[] { aToken, Id });
+            OnViewerStarted.Invoke(this, null);
         }
+
+        public EventHandler OnViewerStarted { get; set; }
 
         public async Task LoadExtensionAsync(string aExtensionName)
         {
@@ -47,38 +50,36 @@ namespace Forge4BlazorRCL
             await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.loadDocumentNode", aViewable, Id);
         }
 
+        #region Mouse Move
         public async Task AddMouseMoveEvent()
         {
             var dotNetReference = DotNetObjectReference.Create(this);
             await JSRuntime.InvokeVoidAsync("forgeViewerJsFunctions.addMouseMoveEvent", new object[] { dotNetReference, Id });
         }
-        public EventHandler<Tuple<double, double>> XYChanged { get; set; }
+        public EventHandler<ForgeViewerMousePosition> MouseMoved { get; set; }
         //https://blazor-university.com/javascript-interop/calling-dotnet-from-javascript/
         [JSInvokable("PostMouseMoveLocation")]
-        public void PostMouseMoveLocation(double x, double y)
+        public void PostMouseMoveLocation(double cx, double cy, double wx, double wy, double sx, double sy, double sz)
         {
-            XYChanged.Invoke(this, new Tuple<double, double>(x, y));
+            MouseMoved.Invoke(this, new ForgeViewerMousePosition(cx, cy, wx, wy, sx, sy, sz));
         }
+        #endregion
 
+        #region Mouse Click
         public async Task AddMouseClickEvent()
         {
             var dotNetReference = DotNetObjectReference.Create(this);
             await JSRuntime.InvokeVoidAsync("forgeViewerJsFunctions.addMouseClickEvent", new object[] { dotNetReference, Id });
         }
-        public EventHandler<Tuple<double, double>> XYClicked { get; set; }
+        public EventHandler<ForgeViewerMousePosition> MouseClicked { get; set; }
         [JSInvokable("PostMouseClickLocation")]
-        public void PostMouseClickLocation(double x, double y)
+        public void PostMouseClickLocation(double cx, double cy, double wx, double wy, double sx, double sy, double sz)
         {
-            XYClicked.Invoke(this, new Tuple<double, double>(x, y));
+            MouseClicked.Invoke(this, new ForgeViewerMousePosition(cx, cy, wx, wy, sx, sy, sz));
         }
+        #endregion
 
-        public EventHandler<Tuple<double, double>> XYSnapperClicked { get; set; }
-        [JSInvokable("PostMouseSnapperClickLocation")]
-        public void PostMouseSnapperClickLocation(double x, double y)
-        {
-            XYSnapperClicked.Invoke(this, new Tuple<double, double>(x, y));
-        }
-
+        #region Autodesk.Extensions.Snapper
         public async Task MakeSnapper()
         {
             await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.makeSnapper", new object[] { Id });
@@ -95,6 +96,6 @@ namespace Forge4BlazorRCL
         {
             await JSRuntime.InvokeAsync<string>("forgeViewerJsFunctions.deregisterAndDeactivateSnapper", new object[] { Id });
         }
-
+        #endregion
     }
 }

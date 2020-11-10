@@ -14,6 +14,12 @@
     [Parameter]
     public EventCallback<ForgeViewer> OnViewerInitializedCallback { get; set; }
 
+    [Parameter]
+    public EventCallback<ForgeViewerMousePosition> OnMouseMove { get; set; }
+
+    [Parameter]
+    public EventCallback<ForgeViewerMousePosition> OnMouseClick { get; set; }
+
     private bool _useSnapper = false;
 
     [Parameter]
@@ -56,8 +62,33 @@
         Viewer = new ForgeViewer(JSRuntime, id, ForgeApiService);
         await OnViewerInitializedCallback.InvokeAsync(Viewer);
         await SnapperChangeAsync();
+        Viewer.OnViewerStarted += OnViewerHasStarted;
     }
 
+    private async void OnViewerHasStarted(object sender, EventArgs e)
+    {
+        if (OnMouseMove.HasDelegate)
+        {
+            await Viewer.AddMouseMoveEvent();
+            Viewer.MouseMoved += OnMouseMoveAsync;
+        }
+
+        if (OnMouseClick.HasDelegate)
+        {
+            await Viewer.AddMouseClickEvent();
+            Viewer.MouseClicked += OnMouseClickAsync;
+        }
+    }
+
+    private async void OnMouseMoveAsync(object sender, ForgeViewerMousePosition aFVMousePosition)
+    {
+        await OnMouseMove.InvokeAsync(aFVMousePosition);
+    }
+
+    private async void OnMouseClickAsync(object sender, ForgeViewerMousePosition aFVMousePosition)
+    {
+        await OnMouseClick.InvokeAsync(aFVMousePosition);
+    }
 
 
 }
