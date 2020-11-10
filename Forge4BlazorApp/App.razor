@@ -10,11 +10,8 @@
 </Router>
 
 @inject IConfiguration Configuration
-
-@inject ForgeApiService ForgeApiService
-
+@inject Forge4BlazorRCL.ForgeApiService ForgeApiService
 @code{
-
     protected override async Task OnInitializedAsync()
     {
         ForgeApiService.SetClientIdAndSecret(
