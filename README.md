@@ -3,10 +3,10 @@ Making it possible to hack Autodesk's Forge Viewer in .NET Core using Blazor and
 
 ~~~c#
 <ForgeViewerComponent id="id1" 
-                        style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);"
-                        OnViewerInitializedCallback="GetViewer" 
-                        UseSnapper="snapIsOn" OnMouseMove="OnMouseMove" OnMouseClick="OnMouseClick"
-                        >
+    style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);"
+    OnViewerInitializedCallback="GetViewer" 
+    UseSnapper="snapIsOn" OnMouseMove="OnMouseMove" OnMouseClick="OnMouseClick"
+    >
 </ForgeViewerComponent>
 ~~~
 
