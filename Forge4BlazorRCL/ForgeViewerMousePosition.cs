@@ -14,12 +14,14 @@ namespace Forge4BlazorRCL
         public double SnapY { get; set; }
         public double SnapZ { get; set; }
 
+        public string SnapType { get; set; }
+
         public ForgeViewerMousePosition()
         {
 
         }
 
-        public ForgeViewerMousePosition(double cx, double cy, double wx, double wy, double sx, double sy, double sz)
+        public ForgeViewerMousePosition(double cx, double cy, double wx, double wy, double sx, double sy, double sz, string sType)
         {
             CanvasX = cx;
             CanvasY = cy;
@@ -28,6 +30,7 @@ namespace Forge4BlazorRCL
             SnapX = sx;
             SnapY = sy;
             SnapZ = sz;
+            SnapType = sType;
         }
     }
 }

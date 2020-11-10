@@ -11,9 +11,9 @@
             World: (@Math.Round(ForgeViewerMouseMovePosition.WorldX, 2), @Math.Round(ForgeViewerMouseMovePosition.WorldY, 2))
             @if (snapIsOn)
             {
-                <span>
-                    Snapper: (@Math.Round(ForgeViewerMouseMovePosition.SnapX, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapY, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapZ, 2))
-                </span>
+            <span>
+                Snapper: (@Math.Round(ForgeViewerMouseMovePosition.SnapX, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapY, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapZ, 2), @ForgeViewerMouseMovePosition.SnapType)
+            </span>
             }
         </h4>
         <h4>
@@ -23,7 +23,7 @@
             @if (snapIsOn)
             {
                 <span>
-                    Snapper: (@Math.Round(ForgeViewerMouseClickPosition.SnapX, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapY, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapZ, 2))
+                    Snapper: (@Math.Round(ForgeViewerMouseClickPosition.SnapX, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapY, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapZ, 2), @ForgeViewerMouseMovePosition.SnapType)
                 </span>
             }
         </h4>
@@ -71,9 +71,10 @@
         JObject manifestJObject = await ForgeApiService.GetManifestAsync(urn64);
         var manifestTxt = Newtonsoft.Json.JsonConvert.SerializeObject(manifestJObject, Newtonsoft.Json.Formatting.Indented);
 
-        snapIsOn = false;
 
+        snapIsOn = false;
         await myViewer.Start();
+
 
         if (manifestJObject == null && uri.ToLower().EndsWith("pdf"))
         {

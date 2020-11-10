@@ -59,9 +59,9 @@ namespace Forge4BlazorRCL
         public EventHandler<ForgeViewerMousePosition> MouseMoved { get; set; }
         //https://blazor-university.com/javascript-interop/calling-dotnet-from-javascript/
         [JSInvokable("PostMouseMoveLocation")]
-        public void PostMouseMoveLocation(double cx, double cy, double wx, double wy, double sx, double sy, double sz)
+        public void PostMouseMoveLocation(double cx, double cy, double wx, double wy, double sx, double sy, double sz, string sType)
         {
-            MouseMoved.Invoke(this, new ForgeViewerMousePosition(cx, cy, wx, wy, sx, sy, sz));
+            MouseMoved.Invoke(this, new ForgeViewerMousePosition(cx, cy, wx, wy, sx, sy, sz, sType));
         }
         #endregion
 
@@ -73,9 +73,9 @@ namespace Forge4BlazorRCL
         }
         public EventHandler<ForgeViewerMousePosition> MouseClicked { get; set; }
         [JSInvokable("PostMouseClickLocation")]
-        public void PostMouseClickLocation(double cx, double cy, double wx, double wy, double sx, double sy, double sz)
+        public void PostMouseClickLocation(double cx, double cy, double wx, double wy, double sx, double sy, double sz, string sType)
         {
-            MouseClicked.Invoke(this, new ForgeViewerMousePosition(cx, cy, wx, wy, sx, sy, sz));
+            MouseClicked.Invoke(this, new ForgeViewerMousePosition(cx, cy, wx, wy, sx, sy, sz, sType));
         }
         #endregion
 

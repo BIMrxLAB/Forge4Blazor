@@ -41,16 +41,19 @@
 
     async Task SnapperChangeAsync()
     {
-        if (_useSnapper && Viewer!=null)
+        if (ViewerHasStarted)
         {
-            await Viewer.LoadExtensionAsync("Autodesk.Snapping");
-            await Viewer.MakeSnapper();
-            await Viewer.RegisterAndActivateSnapper();
-        }
-        else
-        {
-            await Viewer.DestroySnapper();
-            await Viewer.DeregisterAndDeactivateSnapper();
+            if (_useSnapper)
+            {
+                await Viewer.LoadExtensionAsync("Autodesk.Snapping");
+                await Viewer.MakeSnapper();
+                await Viewer.RegisterAndActivateSnapper();
+            }
+            else
+            {
+                await Viewer.DestroySnapper();
+                await Viewer.DeregisterAndDeactivateSnapper();
+            }
         }
     }
 
@@ -61,12 +64,15 @@
     {
         Viewer = new ForgeViewer(JSRuntime, id, ForgeApiService);
         await OnViewerInitializedCallback.InvokeAsync(Viewer);
-        await SnapperChangeAsync();
         Viewer.OnViewerStarted += OnViewerHasStarted;
     }
 
+    bool ViewerHasStarted = false;
+
     private async void OnViewerHasStarted(object sender, EventArgs e)
     {
+        ViewerHasStarted = true;
+
         if (OnMouseMove.HasDelegate)
         {
             await Viewer.AddMouseMoveEvent();
@@ -78,6 +84,8 @@
             await Viewer.AddMouseClickEvent();
             Viewer.MouseClicked += OnMouseClickAsync;
         }
+
+        await SnapperChangeAsync();
     }
 
     private async void OnMouseMoveAsync(object sender, ForgeViewerMousePosition aFVMousePosition)

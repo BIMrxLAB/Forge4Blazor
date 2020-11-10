@@ -18,78 +18,95 @@ window.forgeViewerJsFunctions = {
 
     addMouseClickEvent: function (dotNetObject, loc) {
         viewer[loc].canvas.addEventListener('click', function (e) {
-            console.warn(e);
+            //console.log("JS: Generated mouseclick", e);
             //https://stackoverflow.com/questions/48142782/how-to-get-x-y-coordinates-in-2d-drawing-of-forge-viewer
-            let stuff = viewer[loc].clientToWorld(e.layerX, e.layerY, true);
-            console.warn(stuff);
+            let client2world = viewer[loc].clientToWorld(e.layerX, e.layerY, true);
+            if (client2world == null) {
+                dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, 0, 0, 0, 0, 0, "");
+            } else {
+                if (!(snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
+                    if (snapper[loc].isSnapped()) {
+                        const result = snapper[loc].getSnapResult();
+                        console.warn(result);
 
-            if (!(snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
-                if (snapper[loc].isSnapped()) {
-                    const result = snapper[loc].getSnapResult();
-                    console.warn(result);
-                    dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, result.geomVertex.x, result.geomVertex.y, result.geomVertex.z);
+                        const { SnapType } = Autodesk.Viewing.MeasureCommon;
+                        let sType = "";
+                        switch (result.geomType) {
+                            case SnapType.SNAP_VERTEX: sType = "VERTEX"; break;
+                            case SnapType.SNAP_MIDPOINT: sType = "MIDPOINT"; break;
+                            case SnapType.SNAP_INTERSECTION: sType = "INTERSECTION"; break;
+                            case SnapType.SNAP_CIRCLE_CENTER: sType = "CIRCLE_CENTER"; break;
+                            case SnapType.RASTER_PIXEL: sType = "PIXEL"; break;
+                            case SnapType.SNAP_EDGE: sType = "EDGE"; break;
+                            case SnapType.SNAP_CIRCULARARC: sType = "CIRCULARARC"; break;
+                            case SnapType.SNAP_CURVEDEDGE: sType = "CURVEDEDGE"; break;
+                            case SnapType.SNAP_FACE: sType = "FACE"; break;
+                            case SnapType.SNAP_CURVEDFACE: sType = "CURVEDFACE"; break;
+                            default:
+                                // Do not snap to other types
+                                break;
+                        }
 
-                    const { SnapType } = Autodesk.Viewing.MeasureCommon;
-                    switch (result.geomType) {
-                        case SnapType.SNAP_VERTEX:
-                        case SnapType.SNAP_MIDPOINT:
-                        case SnapType.SNAP_INTERSECTION:
-                        case SnapType.SNAP_CIRCLE_CENTER:
-                        case SnapType.RASTER_PIXEL:
-                        default:
-                            // Do not snap to other types
-                            break;
+                        if (result.geomVertex == null) {
+                            dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, client2world.point.x, client2world.point.y, 0, 0, 0, sType);
+                        } else {
+                            dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, client2world.point.x, client2world.point.y, result.geomVertex.x, result.geomVertex.y, result.geomVertex.z, sType);
+                        }
+                    } else {
+                        dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, client2world.point.x, client2world.point.y, 0, 0, 0, "");
                     }
                 } else {
-                    dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
+                    dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, client2world.point.x, client2world.point.y, 0, 0, 0, "");
                 }
-            } else {
-                dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
             }
         });
     },
 
     addMouseMoveEvent: function (dotNetObject, loc) {
         viewer[loc].canvas.addEventListener('mousemove', function (e) {
-            console.log("JS: Generated mousemove", e);
+            //console.log("JS: Generated mousemove", e);
+            let client2world = viewer[loc].clientToWorld(e.layerX, e.layerY, true);
+            if (client2world == null) {
+                dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, 0, 0, 0, 0, 0, "");
+            } else {
+                //https://d1r98t40ydopvd.cloudfront.net/blog/snappy-viewer-tools
+                if (!(snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
+                    snapper[loc].indicator.clearOverlays();
+                    if (snapper[loc].isSnapped()) {
+                        snapper[loc].indicator.render(); // Show indicator when snapped
+                        const result = snapper[loc].getSnapResult();
 
-            let stuff = viewer[loc].clientToWorld(e.layerX, e.layerY, true);
-            console.warn(stuff);
 
-            //https://d1r98t40ydopvd.cloudfront.net/blog/snappy-viewer-tools
-            if (!(snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
-                snapper[loc].indicator.clearOverlays();
-                if (snapper[loc].isSnapped()) {
-                    const result = snapper[loc].getSnapResult();
+                        const { SnapType } = Autodesk.Viewing.MeasureCommon;
+                        let sType = "";
+                        switch (result.geomType) {
+                            case SnapType.SNAP_VERTEX: sType = "VERTEX"; break;
+                            case SnapType.SNAP_MIDPOINT: sType = "MIDPOINT"; break;
+                            case SnapType.SNAP_INTERSECTION: sType = "INTERSECTION"; break;
+                            case SnapType.SNAP_CIRCLE_CENTER: sType = "CIRCLE_CENTER"; break;
+                            case SnapType.RASTER_PIXEL: sType = "PIXEL"; break;
+                            case SnapType.SNAP_EDGE: sType = "EDGE"; break;
+                            case SnapType.SNAP_CIRCULARARC: sType = "CIRCULARARC"; break;
+                            case SnapType.SNAP_CURVEDEDGE: sType = "CURVEDEDGE"; break;
+                            case SnapType.SNAP_FACE: sType = "FACE"; break;
+                            case SnapType.SNAP_CURVEDFACE: sType = "CURVEDFACE"; break;
+                            default:
+                                // Do not snap to other types
+                                break;
+                        }
 
-                    dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, result.geomVertex.x, result.geomVertex.y, result.geomVertex.z);
+                        if (result.geomVertex == null) {
+                            dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, client2world.point.x, client2world.point.y, 0, 0, 0, sType);
+                        } else {
+                            dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, client2world.point.x, client2world.point.y, result.geomVertex.x, result.geomVertex.y, result.geomVertex.z, sType);
+                        }
 
-                    const { SnapType } = Autodesk.Viewing.MeasureCommon;
-                    switch (result.geomType) {
-                        case SnapType.SNAP_VERTEX:
-                        case SnapType.SNAP_MIDPOINT:
-                        case SnapType.SNAP_INTERSECTION:
-                        case SnapType.SNAP_CIRCLE_CENTER:
-                        case SnapType.RASTER_PIXEL:
-                            // console.log('Snapped to vertex', result.geomVertex);
-                            snapper[loc].indicator.render(); // Show indicator when snapped to a vertex
-                            //this._update(result.geomVertex);
-                            break;
-                        case SnapType.SNAP_EDGE:
-                        case SnapType.SNAP_CIRCULARARC:
-                        case SnapType.SNAP_CURVEDEDGE:
-                            // console.log('Snapped to edge', result.geomEdge);
-                            break;
-                        case SnapType.SNAP_FACE:
-                        case SnapType.SNAP_CURVEDFACE:
-                            // console.log('Snapped to face', result.geomFace);
-                            break;
+                    } else {
+                        dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, client2world.point.x, client2world.point.y, 0, 0, 0, "");
                     }
                 } else {
-                    dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
+                    dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, client2world.point.x, client2world.point.y, 0, 0, 0, "");
                 }
-            } else {
-                dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
             }
         });
     },
@@ -148,7 +165,9 @@ window.forgeViewerJsFunctions = {
     },
 
     destroySnapper: function (loc) {
-        if ((snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
+        if ((viewer[loc] == null || typeof viewer[loc] === 'undefined')) {
+            console.warn('register snapper - no viewer.' + loc);
+        } else if ((snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
             console.warn('destroy snapper - no snapper.' + loc);
         } else {
             snapper[loc] = null;
@@ -158,6 +177,8 @@ window.forgeViewerJsFunctions = {
     registerAndActivateSnapper: function (loc) {
         if ((viewer[loc] == null || typeof viewer[loc] === 'undefined')) {
             console.warn('register snapper - no viewer.' + loc);
+        } else if ((snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
+            console.warn('register snapper - no snapper.' + loc);
         } else {
             console.warn('register snapper');
             viewer[loc].toolController.registerTool(snapper[loc]);
@@ -168,6 +189,8 @@ window.forgeViewerJsFunctions = {
     deregisterAndDeactivateSnapper: function (loc) {
         if ((viewer[loc] == null || typeof viewer[loc] === 'undefined')) {
             console.warn('deregister snapper - no viewer.' + loc);
+        } else if ((snapper[loc] == null || typeof snapper[loc] === 'undefined')) {
+            console.warn('deregister snapper - no snapper.' + loc);
         } else {
             console.warn('deregister snapper');
             viewer[loc].toolController.deactivateTool(snapper[loc].getName());
