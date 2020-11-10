@@ -5,8 +5,28 @@
 
 <div class="container-fluid d-flex h-100">
     <div class="flex-fill bg-warning">
-        <h4>Move - Canvas: (@ForgeViewerMouseMovePosition.CanvasX, @ForgeViewerMouseMovePosition.CanvasY) World: (@Math.Round(ForgeViewerMouseMovePosition.WorldX, 2), @Math.Round(ForgeViewerMouseMovePosition.WorldY, 2)) Snapper: (@Math.Round(ForgeViewerMouseMovePosition.SnapX, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapY, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapZ, 2))</h4>
-        <h4>Click - Canvas: (@ForgeViewerMouseClickPosition.CanvasX, @ForgeViewerMouseClickPosition.CanvasY) World: (@Math.Round(ForgeViewerMouseClickPosition.WorldX, 2), @Math.Round(ForgeViewerMouseClickPosition.WorldY, 2)) Snapper: (@Math.Round(ForgeViewerMouseClickPosition.SnapX, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapY, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapZ, 2))</h4>
+        <h4>
+            Move -
+            Canvas: (@ForgeViewerMouseMovePosition.CanvasX, @ForgeViewerMouseMovePosition.CanvasY)
+            World: (@Math.Round(ForgeViewerMouseMovePosition.WorldX, 2), @Math.Round(ForgeViewerMouseMovePosition.WorldY, 2))
+            @if (snapIsOn)
+            {
+                <span>
+                    Snapper: (@Math.Round(ForgeViewerMouseMovePosition.SnapX, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapY, 2), @Math.Round(ForgeViewerMouseMovePosition.SnapZ, 2))
+                </span>
+            }
+        </h4>
+        <h4>
+            Click -
+            Canvas: (@ForgeViewerMouseClickPosition.CanvasX, @ForgeViewerMouseClickPosition.CanvasY)
+            World: (@Math.Round(ForgeViewerMouseClickPosition.WorldX, 2), @Math.Round(ForgeViewerMouseClickPosition.WorldY, 2))
+            @if (snapIsOn)
+            {
+                <span>
+                    Snapper: (@Math.Round(ForgeViewerMouseClickPosition.SnapX, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapY, 2), @Math.Round(ForgeViewerMouseClickPosition.SnapZ, 2))
+                </span>
+            }
+        </h4>
         <input type="checkbox" @bind="snapIsOn" />Snap
         <ForgeViewerComponent OnViewerInitializedCallback="GetViewer" id="id1" UseSnapper="snapIsOn" OnMouseMove="OnMouseMove" OnMouseClick="OnMouseClick"
                               style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);">

@@ -40,6 +40,8 @@ window.forgeViewerJsFunctions = {
                             // Do not snap to other types
                             break;
                     }
+                } else {
+                    dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
                 }
             } else {
                 dotNetObject.invokeMethodAsync('PostMouseClickLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
@@ -83,6 +85,8 @@ window.forgeViewerJsFunctions = {
                             // console.log('Snapped to face', result.geomFace);
                             break;
                     }
+                } else {
+                    dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
                 }
             } else {
                 dotNetObject.invokeMethodAsync('PostMouseMoveLocation', e.layerX, e.layerY, stuff.point.x, stuff.point.y, 0, 0, 0);
