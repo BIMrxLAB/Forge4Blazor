@@ -28,9 +28,11 @@
             }
         </h4>
         <input type="checkbox" @bind="snapIsOn" />Snap
-        <ForgeViewerComponent OnViewerInitializedCallback="GetViewer" id="id1" UseSnapper="snapIsOn" OnMouseMove="OnMouseMove" OnMouseClick="OnMouseClick"
-                              style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);">
-
+        <ForgeViewerComponent id="id1" 
+                              style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);"
+                              OnViewerInitializedCallback="GetViewer" 
+                              UseSnapper="snapIsOn" OnMouseMove="OnMouseMove" OnMouseClick="OnMouseClick"
+                              >
         </ForgeViewerComponent>
     </div>
 </div>
