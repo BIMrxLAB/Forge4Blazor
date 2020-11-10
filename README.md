@@ -124,7 +124,7 @@ The link to it from the NavMenu.razor page:
 </NavLink>
 ~~~
 
-Here's how the ForeViewer razor component is used in the html markup:
+Here's how the ForgeViewer razor component is used in the html markup:
 ~~~c#
 <ForgeViewerComponent id="id1" 
                         style="position: relative; height: calc(100% - 100px); width: calc(100% - 0px);"
