@@ -10,6 +10,8 @@ Making it possible to hack Autodesk's Forge Viewer in .NET Core using Blazor and
 </ForgeViewerComponent>
 ~~~
 
+![Forge4Blazor](https://github.com/gregorvilkner/Forge4Blazor/blob/master/screenshot.png)
+
 ## About this Repo
 
 This reference code base contains 2 projects: 
